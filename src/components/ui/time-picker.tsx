@@ -64,7 +64,7 @@ function TimePickerInput({
         className="flex h-5 items-center justify-center"
         onClick={onUpChange}
       >
-        <ChevronUpIcon className="size-3" />
+        <ChevronUpIcon className="size-3 text-[var(--gold-accent)]" />
       </button>
       <input
         ref={inputRef}
@@ -86,7 +86,7 @@ function TimePickerInput({
         className="flex h-5 items-center justify-center"
         onClick={() => onLeftChange?.()}
       >
-        <ChevronDownIcon className="size-3" />
+        <ChevronDownIcon className="size-3 text-[var(--gold-accent)]" />
       </button>
     </div>
   )

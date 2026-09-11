@@ -368,7 +368,7 @@ export default function BookPage() {
                               <span className={pickupTime ? "text-white font-medium" : "text-white/50 italic"}>
                                 {pickupTime || "Select time"}
                               </span>
-                              <svg className="absolute right-5 w-5 h-5 text-[var(--gold-accent)]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                              <svg className="absolute right-5 w-5 h-5 text-[var(--gold-accent)]" fill="none" stroke="#DDBB5E" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                             </button>
                           } />
                           <PopoverContent className="w-auto p-4 bg-[#0D0D0D] border-2 border-[var(--gold-accent)]" align="start">
