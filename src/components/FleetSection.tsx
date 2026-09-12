@@ -1,43 +1,17 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Users, Luggage } from "lucide-react"
-import { supabase } from "@/lib/supabase"
-
-interface Car {
-  id: number
-  name: string
-  image: string
-  passenger_cap: number
-  luggage_cap: number
-  description: string
-  category: string
-  isAvailable: boolean
-  fuel_surcharge: string
-  vehicle_rate: string
-  vin_number: string | null
-  standard_gratuity: string
-}
+import { Users, Luggage, Car as CarIcon } from "lucide-react"
+import { useQuery } from "convex/react"
+import { api } from "convex/_generated/api"
 
 function toSlug(name: string) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")
 }
 
 export default function FleetSection() {
-  const [vehicles, setVehicles] = useState<Car[]>([])
-
-  useEffect(() => {
-    async function fetchFleet() {
-      const { data } = await supabase
-        .from("cars")
-        .select("*")
-        .order("id", { ascending: true })
-      if (data) setVehicles(data)
-    }
-    fetchFleet()
-  }, [])
+  const vehicles = useQuery(api.cars.list) ?? []
 
   return (
     <section className="relative py-[120px] bg-gradient-to-br from-[#1A1A1A] to-[#0D0D0D] overflow-hidden">
@@ -56,18 +30,24 @@ export default function FleetSection() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           {vehicles.map((vehicle) => (
-            <Link key={vehicle.id} href={`/fleet/${toSlug(vehicle.name)}`} className="group">
-              <div className="bg-[rgba(26,26,26,0.9)] backdrop-blur-[20px] rounded-[20px] overflow-hidden border border-[rgba(212,175,55,0.2)] transition-all duration-500 relative hover:-translate-y-[15px] hover:scale-[1.02] hover:border-[var(--gold-accent)] hover:shadow-[0_20px_40px_rgba(212,175,55,0.2)]">
+            <Link key={vehicle.id} href={`/fleet/${toSlug(vehicle.name)}`} className="group flex">
+              <div className="w-full flex flex-col bg-[rgba(26,26,26,0.9)] backdrop-blur-[20px] rounded-[20px] overflow-hidden border border-[rgba(212,175,55,0.2)] transition-all duration-500 relative hover:-translate-y-[15px] hover:scale-[1.02] hover:border-[var(--gold-accent)] hover:shadow-[0_20px_40px_rgba(212,175,55,0.2)]">
                 <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[var(--gold-accent)] via-[var(--gold-light)] to-[var(--gold-accent)] scale-x-0 transition-transform duration-500 group-hover:scale-x-100" />
                 <div className="relative h-[280px] overflow-hidden">
-                  <Image
-                    src={vehicle.image}
-                    alt={vehicle.name}
-                    fill
-                    className={`object-cover transition-all duration-800 brightness-90 contrast-[1.1] group-hover:scale-[1.15] group-hover:brightness-110 group-hover:contrast-[1.15]${vehicle.name.toLowerCase().includes("bmw") ? " object-[center_80%]" : vehicle.name.toLowerCase().includes("escalade") ? " object-[center_65%]" : vehicle.name.toLowerCase().includes("wagoneer") || vehicle.name.toLowerCase().includes("rivian") ? " object-top" : ""}`}
-                  />
+                  {vehicle.image ? (
+                    <Image
+                      src={vehicle.image}
+                      alt={vehicle.name}
+                      fill
+                      className={`object-cover transition-all duration-800 brightness-90 contrast-[1.1] group-hover:scale-[1.15] group-hover:brightness-110 group-hover:contrast-[1.15]${vehicle.name.toLowerCase().includes("bmw") ? " object-[center_80%]" : vehicle.name.toLowerCase().includes("escalade") ? " object-[center_65%]" : vehicle.name.toLowerCase().includes("rivian") ? " object-[90%_top]" : vehicle.name.toLowerCase().includes("wagoneer") ? " object-top" : ""}`}
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-[#262626] to-[#111111] flex items-center justify-center">
+                      <CarIcon className="w-16 h-16 text-[var(--gold-accent)] opacity-60" />
+                    </div>
+                  )}
                 </div>
-                <div className="p-[35px] relative">
+                <div className="p-[35px] relative flex-1 flex flex-col">
                   <h3 className="text-white text-[1.6rem] mb-3.5 font-semibold">{vehicle.name}</h3>
                   <div className="flex gap-5 mb-5 flex-wrap">
                     <div className="flex items-center gap-2 text-[var(--soft-gray)] text-[0.9rem] bg-[rgba(212,175,55,0.1)] px-3 py-1.5 rounded-20px border border-[rgba(212,175,55,0.2)]">
@@ -80,11 +60,11 @@ export default function FleetSection() {
                     </div>
                   </div>
                   <p className="text-[var(--soft-gray)] text-[1rem] leading-[1.7] mb-6">{vehicle.description}</p>
-                  <div className="flex justify-between items-center pt-6 border-t border-[rgba(212,175,55,0.1)]">
+                  <div className="flex justify-between items-center pt-6 border-t border-[rgba(212,175,55,0.1)] mt-auto">
                     <div className="text-[var(--soft-gray)] text-[0.9rem]">
                       From <span className="text-[var(--gold-accent)] text-[1.4rem] font-bold">${vehicle.vehicle_rate}</span>/mile
                     </div>
-                    <span className="inline-block bg-gradient-to-br from-[var(--gold-accent)] to-[var(--gold-dark)] text-[#0D0D0D] px-6 py-3 rounded-25px text-[0.85rem] font-semibold uppercase tracking-[1px] transition-all duration-400 group-hover:-translate-y-0.5 group-hover:shadow-[0_8px_25px_rgba(212,175,55,0.4)]">
+                    <span className="inline-block border-2 border-[var(--gold-accent)] bg-transparent text-[var(--gold-accent)] px-6 py-2.5 rounded-full text-[0.75rem] font-semibold uppercase tracking-[1px] transition-all duration-400 group-hover:bg-[var(--gold-accent)] group-hover:text-[#0D0D0D] group-hover:-translate-y-0.5 group-hover:shadow-[0_8px_25px_rgba(212,175,55,0.4)]">
                       View Details
                     </span>
                   </div>

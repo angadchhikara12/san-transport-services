@@ -1,27 +1,13 @@
 "use client"
 
-import { Suspense, useEffect, useState } from "react"
+import { Suspense } from "react"
 import { useParams } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
-import { Users, Luggage, ArrowLeft, Fuel, DollarSign, Hash, Box, Gauge, Star, MapPin } from "lucide-react"
-import { supabase } from "@/lib/supabase"
+import { Users, Luggage, ArrowLeft, Fuel, DollarSign, Hash, Box, Gauge, Star, MapPin, Car as CarIcon } from "lucide-react"
+import { useQuery } from "convex/react"
+import { api } from "convex/_generated/api"
 import Footer from "@/components/Footer"
-
-interface Car {
-  id: number
-  name: string
-  image: string
-  passenger_cap: number
-  luggage_cap: number
-  description: string
-  category: string
-  isAvailable: boolean
-  fuel_surcharge: string
-  vehicle_rate: string
-  vin_number: string | null
-  standard_gratuity: string
-}
 
 interface VehicleSpecs {
   frontLegroom: string
@@ -158,24 +144,10 @@ function SpecItem({ label, value }: { label: string; value: string }) {
 
 function CarDetailContent() {
   const params = useParams<{ car: string }>()
-  const [car, setCar] = useState<Car | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    async function fetchCar() {
-      const slug = Array.isArray(params.car) ? params.car[0] : params.car
-      if (!slug) return
-      const { data } = await supabase
-        .from("cars")
-        .select("*")
-      if (data) {
-        const match = data.find((c: Car) => toSlug(c.name) === slug)
-        setCar(match || null)
-      }
-      setLoading(false)
-    }
-    fetchCar()
-  }, [params.car])
+  const cars = useQuery(api.cars.list)
+  const slug = Array.isArray(params.car) ? params.car[0] : params.car
+  const car = (cars ?? []).find((c) => toSlug(c.name) === slug) ?? null
+  const loading = cars === undefined
 
   if (loading) {
     return (
@@ -208,12 +180,18 @@ function CarDetailContent() {
         {/* Hero */}
         <div className="flex flex-col md:flex-row gap-10 items-center">
           <div className="w-100 h-100 rounded-[20px] overflow-hidden border border-[rgba(212,175,55,0.2)] mx-auto md:mx-0 shrink-0 relative">
-            <Image
-              src={car.image}
-              alt={car.name}
-              fill
-              className={`object-cover${car.name.toLowerCase().includes("bmw") ? " object-[center_75%]" : car.name.toLowerCase().includes("escalade") ? " object-[center_40%]" : car.name.toLowerCase().includes("wagoneer") || car.name.toLowerCase().includes("rivian") ? " object-top" : " object-center"}`}
-            />
+            {car.image ? (
+              <Image
+                src={car.image}
+                alt={car.name}
+                fill
+                className={`object-cover${car.name.toLowerCase().includes("bmw") ? " object-[center_75%]" : car.name.toLowerCase().includes("escalade") ? " object-[center_40%]" : car.name.toLowerCase().includes("rivian") ? " object-[90%_top]" : car.name.toLowerCase().includes("wagoneer") ? " object-top" : " object-center"}`}
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-[#262626] to-[#111111] flex items-center justify-center">
+                <CarIcon className="w-24 h-24 text-[var(--gold-accent)] opacity-60" />
+              </div>
+            )}
           </div>
 
           <div className="w-full md:w-1/2 flex flex-col gap-5">

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useRef } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import Navbar from "@/components/ui/Navbar"
@@ -14,25 +14,12 @@ const BookingMap = dynamic(() => import("@/components/BookingMap"), {
   ssr: false,
 })
 import { cn } from "@/lib/utils"
-import { supabase } from "@/lib/supabase"
+import { useQuery } from "convex/react"
+import { api } from "convex/_generated/api"
 import { format } from "date-fns"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 import { TimePicker } from "@/components/ui/time-picker"
-
-interface Car {
-  id: number
-  name: string
-  image: string
-  passenger_cap: number
-  luggage_cap: number
-  description: string
-  category: string
-  isAvailable: boolean
-  vehicle_rate: string
-  standard_gratuity: string
-  fuel_surcharge: string
-}
 
 const serviceTypes = ["Airport Pickup", "Airport Drop-off", "Hourly Chauffeur", "Point to Point", "Wedding Service", "Corporate Event", "Special Event", "City Tour"]
 const passengerOptions = ["1 Passenger", "2 Passengers", "3 Passengers", "4 Passengers", "5 Passengers", "6 Passengers", "7-10 Passengers", "10+ Passengers"]
@@ -41,7 +28,7 @@ const stepLabels = ["Trip Details", "Vehicle", "Personal Info", "Review & Pay"]
 
 export default function BookPage() {
   const [step, setStep] = useState(1)
-  const [vehicles, setVehicles] = useState<Car[]>([])
+  const vehicles = useQuery(api.cars.list) ?? []
   const [serviceType, setServiceType] = useState("")
   const [pickupDate, setPickupDate] = useState<Date>()
   const [pickupTime, setPickupTime] = useState("")
@@ -77,10 +64,6 @@ export default function BookPage() {
   const [transactionId, setTransactionId] = useState("")
   const [processingPayment, setProcessingPayment] = useState(false)
   const [paymentError, setPaymentError] = useState("")
-
-  useEffect(() => {
-    supabase.from("cars").select("*").order("id", { ascending: true }).then(({ data }) => { if (data) setVehicles(data) })
-  }, [])
 
   const vehicle = vehicles.find((v) => v.name === selectedVehicle)
   const vehicleRate = vehicle?.vehicle_rate || "3.50"

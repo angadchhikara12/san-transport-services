@@ -32,3 +32,10 @@ next-env.d.ts
 
 # pnpm
 pnpm-debug.log*
+
+# convex local dev
+.convex_tmp/
+convex-dev.log
+convex-dev.err.log
+nest-start.log
+nest-start.err.log
