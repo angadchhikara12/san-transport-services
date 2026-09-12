@@ -24,6 +24,7 @@ export const metadata: Metadata = {
 };
 
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ConvexClientProvider } from "@/components/ConvexClientProvider";
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
@@ -33,7 +34,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <TooltipProvider>
-          {children}
+          <ConvexClientProvider>
+            {children}
+          </ConvexClientProvider>
         </TooltipProvider>
       </body>
     </html>

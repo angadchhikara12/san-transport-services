@@ -1,16 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { supabase } from "@/lib/supabase"
-
-interface Car {
-  id: number
-  name: string
-  passenger_cap: number
-  luggage_cap: number
-  category: string
-  vehicle_rate: string
-}
+import { useQuery } from "convex/react"
+import { api } from "convex/_generated/api"
 
 interface CompRow {
   name: string
@@ -104,38 +95,25 @@ function Cell({ children, highlight }: { children: React.ReactNode; highlight?: 
 }
 
 export default function FleetComparison() {
-  const [rows, setRows] = useState<CompRow[]>([])
-
-  useEffect(() => {
-    async function fetchCars() {
-      const { data } = await supabase
-        .from("cars")
-        .select("*")
-        .order("id", { ascending: true })
-      if (data) {
-        const mapped: CompRow[] = data.map((c: Car) => {
-          const extra = specsData[toSlug(c.name)]
-          return {
-            name: c.name,
-            passengers: c.passenger_cap,
-            luggage: c.luggage_cap,
-            category: c.category,
-            rate: c.vehicle_rate,
-            frontLegroom: extra?.frontLegroom ?? "—",
-            rearLegroom: extra?.rearLegroom ?? "—",
-            thirdRowLegroom: extra?.thirdRowLegroom ?? null,
-            maxCargo: extra?.maxCargo ?? "—",
-            engine: extra?.engine ?? "—",
-            horsepower: extra?.horsepower ?? "—",
-            length: extra?.length ?? "—",
-            recommendedFor: extra?.recommendedFor ?? [],
-          }
-        })
-        setRows(mapped)
-      }
+  const vehicles = useQuery(api.cars.list) ?? []
+  const rows: CompRow[] = vehicles.map((c) => {
+    const extra = specsData[toSlug(c.name)]
+    return {
+      name: c.name,
+      passengers: c.passenger_cap,
+      luggage: c.luggage_cap,
+      category: c.category ?? "",
+      rate: c.vehicle_rate ?? "",
+      frontLegroom: extra?.frontLegroom ?? "—",
+      rearLegroom: extra?.rearLegroom ?? "—",
+      thirdRowLegroom: extra?.thirdRowLegroom ?? null,
+      maxCargo: extra?.maxCargo ?? "—",
+      engine: extra?.engine ?? "—",
+      horsepower: extra?.horsepower ?? "—",
+      length: extra?.length ?? "—",
+      recommendedFor: extra?.recommendedFor ?? [],
     }
-    fetchCars()
-  }, [])
+  })
 
   if (rows.length === 0) return null
 
