@@ -1,41 +1,23 @@
-# dependencies
-node_modules/
+node_modules
 
-# testing
-coverage/
-
-# next.js
-.next/
-out/
-
-# production
-build/
-
-# misc
-.DS_Store
-*.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# local env files
-.env*.local
-
-# vercel
+# Output
+.output
 .vercel
+.netlify
+.wrangler
+/.svelte-kit
+/build
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# OS
+.DS_Store
+Thumbs.db
 
-# pnpm
-pnpm-debug.log*
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
 
-# convex local dev
-.convex_tmp/
-convex-dev.log
-convex-dev.err.log
-nest-start.log
-nest-start.err.log
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
