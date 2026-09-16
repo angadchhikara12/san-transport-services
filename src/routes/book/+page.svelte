@@ -371,7 +371,7 @@
 									<!-- Date & Time row -->
 									<div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
 										<div class="flex flex-col gap-3">
-											<CalendarPopover value={pickupDate} onChange={(d) => (pickupDate = d)} label="Pickup Date *" />
+											<CalendarPopover compact value={pickupDate} onChange={(d) => (pickupDate = d)} label="Pickup Date *" />
 										</div>
 										<div class="flex flex-col gap-3">
 											<TimePickerField large value={pickupTime} onChange={(t) => (pickupTime = t)} label="Pickup Time *" />

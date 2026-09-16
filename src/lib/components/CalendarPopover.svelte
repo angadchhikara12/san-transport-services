@@ -13,6 +13,7 @@
 
 	let open = $state(false);
 	let containerEl = $state<HTMLDivElement | null>(null);
+	let pending = $state<Date | undefined>(undefined);
 
 	const today = $derived(new Date());
 	const cursor = $state(
@@ -35,6 +36,7 @@
 
 	$effect(() => {
 		if (!open) return;
+		pending = value;
 		function handleClick(e: MouseEvent) {
 			if (containerEl && e.target instanceof Node && !containerEl.contains(e.target)) {
 				open = false;
@@ -53,16 +55,26 @@
 	}
 
 	function selectDay(day: number) {
-		onChange(new Date(cursor.getFullYear(), cursor.getMonth(), day));
+		pending = new Date(cursor.getFullYear(), cursor.getMonth(), day);
+	}
+
+	function confirm() {
+		if (!pending) return;
+		onChange(pending);
+		open = false;
+	}
+
+	function cancel() {
 		open = false;
 	}
 
 	function isSelected(day: number) {
+		const sel = pending ?? value;
 		return (
-			value &&
-			value.getFullYear() === cursor.getFullYear() &&
-			value.getMonth() === cursor.getMonth() &&
-			value.getDate() === day
+			!!sel &&
+			sel.getFullYear() === cursor.getFullYear() &&
+			sel.getMonth() === cursor.getMonth() &&
+			sel.getDate() === day
 		);
 	}
 
@@ -103,7 +115,7 @@
 
 	{#if open}
 		<div
-			class="absolute top-full mt-2 bg-[#0D0D0D] border-2 border-[var(--gold-accent)] text-white rounded-xl z-[1001] shadow-[0_20px_60px_rgba(0,0,0,0.6)] select-none {compact ? 'left-0 w-64 max-w-full p-2.5' : 'left-0 right-0 p-3'}"
+			class="absolute top-full mt-2 bg-[#0D0D0D] border-2 border-[var(--gold-accent)] text-white rounded-xl z-[1001] shadow-[0_20px_60px_rgba(0,0,0,0.6)] select-none {compact ? 'left-0 w-56 max-w-full p-2' : 'left-0 right-0 p-3'}"
 		>
 			<div class="flex items-center justify-between mb-2 {compact ? 'mb-1.5' : ''}">
 				<button
@@ -124,23 +136,40 @@
 			</div>
 			<div class="grid grid-cols-7 gap-1 mb-1">
 				{#each ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'] as d (d)}
-					<div class="text-center uppercase tracking-wide text-white/40 {compact ? 'py-0.5 text-[0.65rem]' : 'py-1 text-[0.7rem]'}">{d}</div>
+					<div class="text-center uppercase tracking-wide text-white/40 {compact ? 'py-0.5 text-[0.6rem]' : 'py-1 text-[0.7rem]'}">{d}</div>
 				{/each}
 			</div>
 			<div class="grid grid-cols-7 gap-1">
 				{#each days as day, i (i)}
 					{#if day === null}
-						<div class={compact ? 'h-7' : 'h-9'} />
+						<div class={compact ? 'h-6' : 'h-9'} />
 					{:else}
 						<button
 							type="button"
-							class="w-full rounded-md flex items-center justify-center cursor-pointer transition-colors hover:bg-white/5 {compact ? 'h-7 text-xs' : 'h-9 text-sm'} {isSelected(day) ? 'bg-gradient-to-br from-[var(--gold-accent)] to-[var(--gold-dark)] text-[#0D0D0D] font-bold' : ''} {isToday(day) && !isSelected(day) ? 'bg-[rgba(221,186,94,0.15)] border border-[var(--gold-accent)]' : ''}"
+							class="w-full rounded-md flex items-center justify-center cursor-pointer transition-colors hover:bg-white/5 {compact ? 'h-6 text-[0.7rem]' : 'h-9 text-sm'} {isSelected(day) ? 'bg-gradient-to-br from-[var(--gold-accent)] to-[var(--gold-dark)] text-[#0D0D0D] font-bold' : ''} {isToday(day) && !isSelected(day) ? 'bg-[rgba(221,186,94,0.15)] border border-[var(--gold-accent)]' : ''}"
 							onclick={() => selectDay(day)}
 						>
 							{day}
 						</button>
 					{/if}
 				{/each}
+			</div>
+			<div class="flex gap-2 {compact ? 'mt-2' : 'mt-3'}">
+				<button
+					type="button"
+					class="flex-1 py-2 rounded-lg bg-[#0A0A0A] border border-white/15 text-white/80 text-[0.8rem] font-medium cursor-pointer transition-colors hover:text-white hover:border-white/30"
+					onclick={cancel}
+				>
+					Cancel
+				</button>
+				<button
+					type="button"
+					class="flex-1 py-2 rounded-lg bg-gradient-to-r from-[var(--gold-light)] via-[var(--gold-accent)] to-[var(--gold-dark)] text-[#0D0D0D] text-[0.8rem] font-bold cursor-pointer transition-opacity disabled:opacity-40 disabled:cursor-not-allowed {pending ? 'hover:opacity-90' : ''}"
+					disabled={!pending}
+					onclick={confirm}
+				>
+					Set {pending ? pending.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'date'}
+				</button>
 			</div>
 		</div>
 	{/if}
