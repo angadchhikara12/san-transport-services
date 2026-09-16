@@ -14,9 +14,11 @@
 
 	let open = $state(false);
 	let containerEl = $state<HTMLDivElement | null>(null);
+	let pendingTime = $state<string>('');
 
 	$effect(() => {
 		if (!open) return;
+		pendingTime = value;
 		function handleClick(e: MouseEvent) {
 			if (containerEl && e.target instanceof Node && !containerEl.contains(e.target)) {
 				open = false;
@@ -25,6 +27,15 @@
 		document.addEventListener('mousedown', handleClick);
 		return () => document.removeEventListener('mousedown', handleClick);
 	});
+
+	function confirm() {
+		onChange(pendingTime);
+		open = false;
+	}
+
+	function cancel() {
+		open = false;
+	}
 </script>
 
 <div bind:this={containerEl} class="relative">
@@ -47,7 +58,24 @@
 
 	{#if open}
 		<div class="absolute top-full left-0 right-0 mt-2 bg-[#0D0D0D] border-2 border-[var(--gold-accent)] text-white rounded-xl z-[1001] shadow-[0_20px_60px_rgba(0,0,0,0.6)] p-4 w-auto">
-			<TimePicker large={large} value={value} onChange={onChange} />
+			<TimePicker large={large} value={pendingTime} onChange={(t) => (pendingTime = t)} />
+			<div class="flex gap-2 mt-4">
+				<button
+					type="button"
+					class="flex-1 py-2 rounded-lg bg-[#0A0A0A] border border-white/15 text-white/80 text-[0.8rem] font-medium cursor-pointer transition-colors hover:text-white hover:border-white/30"
+					onclick={cancel}
+				>
+					Cancel
+				</button>
+				<button
+					type="button"
+					class="flex-1 py-2 rounded-lg bg-gradient-to-r from-[var(--gold-light)] via-[var(--gold-accent)] to-[var(--gold-dark)] text-[#0D0D0D] text-[0.8rem] font-bold cursor-pointer transition-opacity disabled:opacity-40 disabled:cursor-not-allowed {pendingTime ? 'hover:opacity-90' : ''}"
+					disabled={!pendingTime}
+					onclick={confirm}
+				>
+					Set {pendingTime || 'time'}
+				</button>
+			</div>
 		</div>
 	{/if}
 </div>
