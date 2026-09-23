@@ -123,7 +123,7 @@
 
 	<!-- Hero Section -->
 	<section class="relative w-full h-screen bg-[#0D0D0D] overflow-hidden">
-		<div class="absolute inset-0 bg-cover bg-center opacity-40" style="background-image:url('/logo.jpeg'); background-position:center 55%" />
+		<div class="absolute inset-0 bg-cover bg-center opacity-40" style="background-image:url('https://cdn.sants.us/poster.avif'); background-position:center 55%" />
 		<div class="absolute inset-0 bg-gradient-to-b from-[#0D0D0D]/15 via-[#0D0D0D]/20 to-[#0D0D0D]/70 z-[2]" />
 		<div class="relative z-[3] text-center max-w-[700px] w-[calc(100%-160px)] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
 			<div class="inline-block px-4 py-1.5 border border-[var(--gold-accent)] text-[var(--gold-accent)] text-[0.65rem] tracking-[3px] uppercase mb-5 font-medium backdrop-blur-[10px] bg-[rgba(221,186,94,0.08)]">
