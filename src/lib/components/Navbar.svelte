@@ -36,7 +36,7 @@
 >
 	<div class="max-w-[1400px] mx-auto px-5 flex justify-between items-center h-18">
 		<a href={home} class="flex items-end gap-3 no-underline">
-			<img src="/logo.jpeg" alt="Logo" width={40} height={40} class="w-11 h-11 object-contain" />
+			<img src="/logo.jpeg" alt="Logo" width={40} height={40} class="w-15 h-11 object-contain" />
 			<p class="font-[family-name:var(--font-playfair)] text-xl font-bold text-white">
 				<span class="text-3xl font-[family-name:var(--font-playfair)]">SAN </span><span class="text-3xl text-[var(--gold-accent)] font-[family-name:var(--font-playfair)]">T</span><span class="text-[var(--gold-accent)]">ransport </span><span class="text-3xl text-[var(--gold-accent)] font-[family-name:var(--font-playfair)]">S</span><span class="text-[var(--gold-accent)]">ervices</span>
 			</p>
